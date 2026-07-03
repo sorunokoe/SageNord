@@ -1,84 +1,63 @@
 /* ============================================================
    Sage Nord — entry point.
-   Wires theme, scroll reveals, hero entrance, and the particle
-   field. Everything here is progressive enhancement: the site is
-   complete and readable with this script disabled.
+   Content-first: the site is complete and readable with this
+   script disabled. Enhancements: theme, scroll story, WebGL.
    ============================================================ */
 
 import "./style.css";
 import { initThemeToggle, onThemeChange } from "./theme";
-import { ParticleField } from "./particles";
+import { PointsRenderer, type SceneRenderer } from "./renderer";
+import { initScroll } from "./scroll";
 
-const reduceMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-).matches;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ---- Footer year ---------------------------------------- */
+/* Footer year */
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-/* ---- Theme ---------------------------------------------- */
+/* Theme */
 initThemeToggle();
 
-/* ---- Scroll reveals ------------------------------------- */
-function initReveals() {
-  const items = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    items.forEach((el) => el.classList.add("is-in"));
-    return;
-  }
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          (entry.target as HTMLElement).style.transitionDelay =
-            (entry.target as HTMLElement).dataset.delay ?? "0ms";
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
-  );
-  items.forEach((el) => io.observe(el));
-}
-
-/* ---- Hero mission entrance (word stagger) --------------- */
-function initHeroEntrance() {
-  const mission = document.querySelector<HTMLElement>("[data-split]");
-  if (!mission) return;
-  if (reduceMotion) return; // leave as-is, fully visible
-
-  const words = (mission.textContent ?? "").trim().split(/\s+/);
-  mission.textContent = "";
-  mission.style.setProperty("--stagger", "0");
-  words.forEach((word, idx) => {
-    const wrap = document.createElement("span");
-    wrap.className = "word";
-    wrap.textContent = word;
-    wrap.style.transitionDelay = `${idx * 70}ms`;
-    mission.appendChild(wrap);
-    mission.appendChild(document.createTextNode(" "));
+/* Hero line entrance (word stagger) */
+(function heroEntrance() {
+  const line = document.querySelector<HTMLElement>("[data-split]");
+  if (!line || reduceMotion) return;
+  const words = (line.textContent ?? "").trim().split(/\s+/);
+  line.textContent = "";
+  words.forEach((w, i) => {
+    const span = document.createElement("span");
+    span.className = "word";
+    span.textContent = w;
+    span.style.transitionDelay = `${i * 90}ms`;
+    line.appendChild(span);
+    line.appendChild(document.createTextNode(" "));
   });
-  // trigger on next frame
-  requestAnimationFrame(() => mission.classList.add("is-in"));
-}
+  requestAnimationFrame(() => line.classList.add("is-in"));
+})();
 
-/* ---- Particle field ------------------------------------- */
-function initParticles() {
+/* WebGL scene + scroll story */
+(function initScene() {
   const canvas = document.getElementById("scene") as HTMLCanvasElement | null;
   if (!canvas) return;
-  // Bail entirely if WebGL is unavailable — the site stands on its own.
+  let renderer: SceneRenderer;
   try {
-    const field = new ParticleField(canvas);
-    field.start();
-    onThemeChange(() => field.setTheme());
+    renderer = new PointsRenderer(canvas);
   } catch (err) {
-    console.warn("Particle field unavailable:", err);
+    console.warn("WebGL unavailable — running without the canvas.", err);
     canvas.style.display = "none";
+    // Still reveal chapter copy via the scroll rig with a no-op renderer.
+    initScroll({
+      setProgress() {},
+      setPointer() {},
+      setTheme() {},
+      resize() {},
+      start() {},
+      stop() {},
+      dispose() {},
+    });
+    return;
   }
-}
-
-initReveals();
-initHeroEntrance();
-initParticles();
+  onThemeChange(() => renderer.setTheme());
+  window.addEventListener("resize", () => renderer.resize(), { passive: true });
+  initScroll(renderer);
+})();
