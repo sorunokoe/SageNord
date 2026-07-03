@@ -7,7 +7,10 @@
 import "./style.css";
 import { initThemeToggle, onThemeChange } from "./theme";
 import { PointsRenderer, type SceneRenderer } from "./renderer";
+import { FlowFieldRenderer } from "./gpgpu";
 import { initScroll } from "./scroll";
+
+const isMobile = window.matchMedia("(max-width: 720px)").matches;
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -41,7 +44,21 @@ initThemeToggle();
   if (!canvas) return;
   let renderer: SceneRenderer;
   try {
-    renderer = new PointsRenderer(canvas);
+    // GPGPU flow-field on capable desktops; lighter CPU points on
+    // mobile / reduced-motion (avoids the GPGPU+scroll fps cost).
+    if (isMobile || reduceMotion) {
+      renderer = new PointsRenderer(canvas);
+    } else {
+      try {
+        renderer = new FlowFieldRenderer(canvas);
+      } catch (gpuErr) {
+        console.warn("GPGPU unavailable — falling back to CPU points.", gpuErr);
+        // A canvas can hold only one WebGL context; swap in a fresh one.
+        const fresh = canvas.cloneNode(false) as HTMLCanvasElement;
+        canvas.replaceWith(fresh);
+        renderer = new PointsRenderer(fresh);
+      }
+    }
   } catch (err) {
     console.warn("WebGL unavailable — running without the canvas.", err);
     canvas.style.display = "none";
