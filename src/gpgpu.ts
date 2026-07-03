@@ -193,6 +193,12 @@ export class FlowFieldRenderer implements SceneRenderer {
   private running = false;
   private visible = true;
   private inView = true;
+  private io?: IntersectionObserver;
+
+  private dpr: number;
+  private fpsAccum = 0;
+  private fpsFrames = 0;
+  private checkT = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.W = 512;
@@ -205,7 +211,8 @@ export class FlowFieldRenderer implements SceneRenderer {
       alpha: true,
       powerPreference: "high-performance",
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.renderer.setPixelRatio(this.dpr);
 
     // float textures are required for GPGPU
     if (!this.renderer.capabilities.isWebGL2) {
@@ -273,7 +280,9 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.resize();
 
     if (reduceMotion()) {
-      // single static settle render (compute a few steps toward the orb)
+      // Defensive only: main.ts routes reduced-motion to PointsRenderer, so
+      // this path is normally unreachable. Kept in case GPGPU is constructed
+      // directly. Single static settle render (compute a few steps → orb).
       for (let i = 0; i < 60; i++) this.gpu.compute();
       this.material.uniforms.uPosition.value =
         this.gpu.getCurrentRenderTarget(this.posVar).texture;
@@ -310,14 +319,14 @@ export class FlowFieldRenderer implements SceneRenderer {
 
   private bindVisibility() {
     document.addEventListener("visibilitychange", this.onVis);
-    const io = new IntersectionObserver(
+    this.io = new IntersectionObserver(
       (e) => {
         this.inView = e[0]?.isIntersecting ?? true;
         this.updateRunning();
       },
       { threshold: 0.01 }
     );
-    io.observe(this.renderer.domElement);
+    this.io.observe(this.renderer.domElement);
   }
   private onVis = () => {
     this.visible = document.visibilityState === "visible";
@@ -402,12 +411,31 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.camera.position.z = this.camZ;
     this.points.rotation.y = Math.sin((now / 1000) * 0.05) * 0.16;
     this.renderer.render(this.scene, this.camera);
+    this.monitor(dt);
     if (this.running && this.visible && this.inView)
       this.raf = requestAnimationFrame(this.tick);
   };
 
+  /** Downscale pixel ratio on sustained low fps (fill-rate escape hatch). */
+  private monitor(dt: number) {
+    this.fpsAccum += dt;
+    this.fpsFrames++;
+    this.checkT += dt;
+    if (this.checkT >= 2) {
+      const fps = this.fpsFrames / this.fpsAccum;
+      if (fps < 45 && this.dpr > 0.8) {
+        this.dpr = Math.max(0.8, this.dpr * 0.8);
+        this.renderer.setPixelRatio(this.dpr);
+      }
+      this.fpsAccum = 0;
+      this.fpsFrames = 0;
+      this.checkT = 0;
+    }
+  }
+
   dispose() {
     if (this.raf) cancelAnimationFrame(this.raf);
+    this.io?.disconnect();
     document.removeEventListener("visibilitychange", this.onVis);
     this.sceneTex.forEach((t) => t.dispose());
     this.gpu.dispose();

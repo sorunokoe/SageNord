@@ -87,6 +87,7 @@ export class PointsRenderer implements SceneRenderer {
   private running = false;
   private visible = true;
   private inView = true;
+  private io?: IntersectionObserver;
 
   private dpr: number;
   private fpsAccum = 0;
@@ -149,14 +150,14 @@ export class PointsRenderer implements SceneRenderer {
 
   private bindVisibility() {
     document.addEventListener("visibilitychange", this.onVis);
-    const io = new IntersectionObserver(
+    this.io = new IntersectionObserver(
       (e) => {
         this.inView = e[0]?.isIntersecting ?? true;
         this.updateRunning();
       },
       { threshold: 0.01 }
     );
-    io.observe(this.renderer.domElement);
+    this.io.observe(this.renderer.domElement);
   }
   private onVis = () => {
     this.visible = document.visibilityState === "visible";
@@ -300,6 +301,7 @@ export class PointsRenderer implements SceneRenderer {
 
   dispose() {
     if (this.raf) cancelAnimationFrame(this.raf);
+    this.io?.disconnect();
     document.removeEventListener("visibilitychange", this.onVis);
     this.geometry.dispose();
     this.material.dispose();

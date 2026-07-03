@@ -25,4 +25,4 @@ Defining value: Trust — software reliable enough that people can depend on it.
 
 ## Contact
 - Email: hello@sagenord.com
-- Website: https://sagenord.com
+- Website: https://sorunokoe.github.io/SageNord/ (moving to https://sagenord.com)

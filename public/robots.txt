@@ -13,4 +13,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://sagenord.com/sitemap.xml
+Sitemap: https://sorunokoe.github.io/SageNord/sitemap.xml

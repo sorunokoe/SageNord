@@ -9,7 +9,9 @@
       name="description"
       content="Sage Nord is a senior iOS and mobile architecture studio. Software worth trusting — apps and AI, built to hold up."
     />
-    <link rel="canonical" href="https://sagenord.com/" />
+    <!-- Live home is currently the GitHub Pages URL. When sagenord.com DNS is
+         wired up: set vite base to "/", add public/CNAME, swap these URLs. -->
+    <link rel="canonical" href="https://sorunokoe.github.io/SageNord/" />
     <meta name="theme-color" content="#f7f9fc" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#05070d" media="(prefers-color-scheme: dark)" />
 
@@ -20,8 +22,8 @@
       property="og:description"
       content="Senior iOS and mobile architecture. Apps and AI, built to hold up."
     />
-    <meta property="og:url" content="https://sagenord.com/" />
-    <meta property="og:image" content="https://sagenord.com/og.png" />
+    <meta property="og:url" content="https://sorunokoe.github.io/SageNord/" />
+    <meta property="og:image" content="https://sorunokoe.github.io/SageNord/og.png" />
     <meta property="og:locale" content="en" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Sage Nord — Software worth trusting" />
@@ -29,9 +31,17 @@
       name="twitter:description"
       content="Senior iOS and mobile architecture. Apps and AI, built to hold up."
     />
-    <meta name="twitter:image" content="https://sagenord.com/og.png" />
+    <meta name="twitter:image" content="https://sorunokoe.github.io/SageNord/og.png" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- No-JS: chapter copy is hidden until revealed by JS; restore it. -->
+    <noscript>
+      <style>
+        [data-reveal] { opacity: 1 !important; transform: none !important; }
+        .hero__line .word { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
 
     <script>
       (function () {
@@ -53,7 +63,7 @@
         "@type": "ProfessionalService",
         "name": "Sage Nord",
         "legalName": "Saga ApS",
-        "url": "https://sagenord.com",
+        "url": "https://sorunokoe.github.io/SageNord/",
         "email": "hello@sagenord.com",
         "description": "Senior iOS and mobile architecture studio. Software worth trusting — apps and AI, built to hold up.",
         "slogan": "Software worth trusting.",

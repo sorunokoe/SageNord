@@ -36,8 +36,10 @@ export function initScroll(renderer: SceneRenderer) {
     renderer.setProgress(lenis.progress || 0);
   });
 
-  // Debug hook so automated checks can drive real (Lenis) scroll.
-  (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+  // Debug hook so automated checks can drive real (Lenis) scroll. Dev only.
+  if (import.meta.env.DEV) {
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+  }
 
   renderer.setProgress(0);
   renderer.start();

@@ -9,7 +9,7 @@
   --bg-elev: #ffffff;
   --ink: #0a1120;
   --ink-soft: #47506a;
-  --ink-faint: #8791a8;
+  --ink-faint: #6b7488; /* ~4.6:1 on --bg for AA body text */
   --line: #d9e0ec;
   --accent: #1b6ef3;
   --accent-ink: #ffffff;
