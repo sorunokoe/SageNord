@@ -1,0 +1,20 @@
+{
+  "name": "sagenord",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Sage Nord — senior iOS & mobile architecture. To empower people through software.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}
