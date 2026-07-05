@@ -115,25 +115,22 @@ em {
 }
 
 /* ---- Canvas (fixed, decorative, behind everything) ------- */
-/* Particle field is confined to its own zone (right) so copy sits on clean
-   negative space — legible at full brightness, no scrim needed. */
+/* Full-bleed canvas: the particle field is a single layer with content over it.
+   No hard edge — a shader alpha-falloff fades particles out across the reading
+   column (desktop), so copy sits in soft negative space, not a cut-off box. */
 #scene {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: auto;
-  width: 52vw;
+  inset: 0;
+  width: 100%;
   height: 100%;
   z-index: 0;
   pointer-events: none;
   display: block;
 }
 @media (max-width: 900px) {
-  /* Narrow screens can't split; keep it as a calm top-anchored backdrop. */
+  /* Mobile uses the lighter CPU field centered behind content; keep it calm. */
   #scene {
-    width: 100%;
-    opacity: 0.32;
+    opacity: 0.34;
   }
 }
 .site-header,

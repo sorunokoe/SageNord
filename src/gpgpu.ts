@@ -146,12 +146,16 @@ uniform float uSize;
 attribute vec2 ref;
 attribute float aRand;
 varying float vRand;
+varying float vNdcX;
+varying float vNdcY;
 void main(){
   vec3 pos = texture2D(uPosition, ref).xyz;
   vRand = aRand;
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_PointSize = uSize * (320.0 / -mv.z);
   gl_Position = projectionMatrix * mv;
+  vNdcX = gl_Position.x / gl_Position.w;
+  vNdcY = gl_Position.y / gl_Position.w;
 }
 `;
 
@@ -160,14 +164,24 @@ uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform float uOpacity;
 uniform float uBrightness;
+uniform float uFadeStart; // NDC x where particles begin (left = text side)
+uniform float uFadeEnd;   // NDC x where particles reach full density
 varying float vRand;
+varying float vNdcX;
+varying float vNdcY;
 void main(){
   vec2 c = gl_PointCoord - 0.5;
   float d = length(c);
   if (d > 0.5) discard;
   float a = smoothstep(0.5, 0.05, d);
   vec3 col = mix(uColorA, uColorB, vRand);
-  gl_FragColor = vec4(col * uBrightness, a * uOpacity * uBrightness);
+  // Soft falloff across the reading side + gentle top/bottom vignette so the
+  // field dissolves into the page instead of ending at a hard canvas edge.
+  float sideFade = smoothstep(uFadeStart, uFadeEnd, vNdcX);
+  float vignette = smoothstep(1.25, 0.7, abs(vNdcY));
+  float mask = sideFade * vignette;
+  if (mask < 0.01) discard;
+  gl_FragColor = vec4(col * uBrightness, a * uOpacity * uBrightness * mask);
 }
 `;
 
@@ -274,6 +288,8 @@ export class FlowFieldRenderer implements SceneRenderer {
         uColorB: { value: new Color() },
         uOpacity: { value: 0.85 },
         uBrightness: { value: 1 },
+        uFadeStart: { value: -0.15 },
+        uFadeEnd: { value: 0.5 },
       },
       vertexShader: RENDER_VERT,
       fragmentShader: RENDER_FRAG,
@@ -371,7 +387,7 @@ export class FlowFieldRenderer implements SceneRenderer {
     const ny = r.height ? -(((clientY - r.top) / r.height) * 2 - 1) : 0;
     const h = Math.tan((this.camera.fov * Math.PI) / 360) * this.camera.position.z;
     const w = h * this.camera.aspect;
-    this.mouse.set(nx * w, ny * h, 0);
+    this.mouse.set(nx * w - this.points.position.x, ny * h, 0);
     this.mouseActive = active ? 1 : 0;
   }
 
@@ -397,7 +413,9 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.points.position.x = 0;
+    // Bias the form into the open right-hand space; the shader fade dissolves
+    // any strays over the left-hand copy. Centered on narrow screens.
+    this.points.position.x = w > 900 ? 1.4 : 0;
   }
 
   start() {
