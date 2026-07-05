@@ -30,9 +30,6 @@ import type { SceneRenderer } from "./renderer";
 const reduceMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function smoothstep(t: number) {
-  return t * t * (3 - 2 * t);
-}
 function cssColor(name: string, fb: string) {
   const raw = getComputedStyle(document.documentElement)
     .getPropertyValue(name)
@@ -211,6 +208,9 @@ export class FlowFieldRenderer implements SceneRenderer {
   private paY = 0;
   private camX = 0;
   private camY = 0;
+  private fromIdx = 0; // scene morph: previous word
+  private toIdx = 0; // scene morph: current word
+  private blend = 1; // 0..1 eased each frame
 
   private raf = 0;
   private lastT = 0;
@@ -253,7 +253,6 @@ export class FlowFieldRenderer implements SceneRenderer {
     const scenes = buildScenes(this.count);
     this.fillTexture(dtPos, scenes.positions[0]);
     this.sceneTex = scenes.positions.map((p) => this.makeSceneTexture(p));
-    this.cameraZ = scenes.cameraZ;
 
     this.posVar = this.gpu.addVariable("texturePosition", SIM_FRAG, dtPos);
     this.gpu.setVariableDependencies(this.posVar, [this.posVar]);
@@ -292,8 +291,8 @@ export class FlowFieldRenderer implements SceneRenderer {
         uColorB: { value: new Color() },
         uOpacity: { value: 0.85 },
         uBrightness: { value: 1 },
-        uFadeStart: { value: -0.15 },
-        uFadeEnd: { value: 0.5 },
+        uFadeStart: { value: -0.1 },
+        uFadeEnd: { value: 0.4 },
       },
       vertexShader: RENDER_VERT,
       fragmentShader: RENDER_FRAG,
@@ -319,8 +318,6 @@ export class FlowFieldRenderer implements SceneRenderer {
 
     this.bindVisibility();
   }
-
-  private cameraZ: number[] = [];
 
   private fillTexture(tex: DataTexture, positions: Float32Array) {
     const data = tex.image.data as unknown as Float32Array;
@@ -361,16 +358,20 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.updateRunning();
   };
 
-  setProgress(t: number) {
-    const p = Math.max(0, Math.min(1, t));
-    const seg = p * (SCENE_COUNT - 1);
-    const i = Math.min(SCENE_COUNT - 2, Math.floor(seg));
-    const f = smoothstep(seg - i);
+  /** Morph the particles to a section's word (index into the scene list). */
+  setScene(index: number) {
+    const i = Math.max(0, Math.min(SCENE_COUNT - 1, index));
+    if (i === this.toIdx) {
+      if (!this.running && !reduceMotion()) this.start();
+      return;
+    }
+    this.fromIdx = this.toIdx;
+    this.toIdx = i;
     const u = this.posVar.material.uniforms;
-    u.uSceneA.value = this.sceneTex[i];
-    u.uSceneB.value = this.sceneTex[i + 1];
-    u.uBlend.value = f;
-    this.camZTarget = this.cameraZ[i] + (this.cameraZ[i + 1] - this.cameraZ[i]) * f;
+    u.uSceneA.value = this.sceneTex[this.fromIdx];
+    u.uSceneB.value = this.sceneTex[this.toIdx];
+    this.blend = 0;
+    u.uBlend.value = 0;
     if (!this.running && !reduceMotion()) this.start();
   }
 
@@ -420,9 +421,10 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    // Bias the form into the open right-hand space; the shader fade dissolves
-    // any strays over the left-hand copy. Centered on narrow screens.
-    this.points.position.x = w > 900 ? 1.4 : 0;
+    // Particle text clusters on the right; copy lives in a left column. The
+    // left-fade dissolves any strays over the copy during dispersion.
+    this.points.position.x = w > 900 ? 1.35 : 0;
+    this.points.position.y = w > 900 ? 0.15 : 0.15;
   }
 
   start() {
@@ -461,6 +463,11 @@ export class FlowFieldRenderer implements SceneRenderer {
     u.uMouseActive.value = this.mouseActive;
     u.uEnergy.value = this.energy;
     this.material.uniforms.uBrightness.value = 1 + this.energy * 0.45;
+    // ease the scene-morph blend toward the current word
+    if (this.blend < 1) {
+      this.blend = Math.min(1, this.blend + (1 - this.blend) * (1 - Math.pow(0.06, dt)) + dt * 0.15);
+      u.uBlend.value = this.blend;
+    }
     this.gpu.compute();
     this.material.uniforms.uPosition.value =
       this.gpu.getCurrentRenderTarget(this.posVar).texture;

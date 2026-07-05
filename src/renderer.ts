@@ -20,8 +20,8 @@ import {
 import { buildScenes, SCENE_COUNT, type SceneSet } from "./scenes";
 
 export interface SceneRenderer {
-  /** global scroll progress, 0..1 */
-  setProgress(t: number): void;
+  /** morph the particles to the given section's word (scene index) */
+  setScene(index: number): void;
   /** pointer in client (viewport) pixel coordinates */
   setPointer(clientX: number, clientY: number, active: boolean): void;
   /** raise field energy 0..1 (scroll velocity); decays over time */
@@ -39,9 +39,6 @@ const reduceMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = () => window.matchMedia("(max-width: 720px)").matches;
 
-function smoothstep(t: number) {
-  return t * t * (3 - 2 * t);
-}
 
 function makeSprite(): Texture {
   const s = 64;
@@ -82,7 +79,6 @@ export class PointsRenderer implements SceneRenderer {
   private colorA = new Color();
   private colorB = new Color();
 
-  private progress = 0;
   private camZ = 4.4;
   private camZTarget = 4.4;
 
@@ -172,17 +168,11 @@ export class PointsRenderer implements SceneRenderer {
     this.updateRunning();
   };
 
-  setProgress(t: number) {
-    this.progress = Math.max(0, Math.min(1, t));
-    const seg = this.progress * (SCENE_COUNT - 1);
-    const i = Math.min(SCENE_COUNT - 2, Math.floor(seg));
-    const f = smoothstep(seg - i);
-    const a = this.scenes.positions[i];
-    const b = this.scenes.positions[i + 1];
-    const tgt = this.target;
-    for (let k = 0; k < tgt.length; k++) tgt[k] = a[k] + (b[k] - a[k]) * f;
-    this.camZTarget =
-      this.scenes.cameraZ[i] + (this.scenes.cameraZ[i + 1] - this.scenes.cameraZ[i]) * f;
+  setScene(index: number) {
+    const i = Math.max(0, Math.min(SCENE_COUNT - 1, index));
+    const src = this.scenes.positions[i];
+    this.target.set(src);
+    this.camZTarget = this.scenes.cameraZ[i];
     if (!this.running && !reduceMotion()) this.start();
   }
 
@@ -235,7 +225,8 @@ export class PointsRenderer implements SceneRenderer {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.points.position.x = 0;
+    this.points.position.x = w > 900 ? 1.35 : 0;
+    this.points.position.y = 0.15;
   }
 
   start() {
