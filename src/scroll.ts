@@ -72,11 +72,7 @@ function bindPointer(renderer: SceneRenderer) {
   if (reduceMotion()) return;
   window.addEventListener(
     "pointermove",
-    (e) => {
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = -((e.clientY / window.innerHeight) * 2 - 1);
-      renderer.setPointer(nx, ny, true);
-    },
+    (e) => renderer.setPointer(e.clientX, e.clientY, true),
     { passive: true }
   );
   window.addEventListener("pointerleave", () =>

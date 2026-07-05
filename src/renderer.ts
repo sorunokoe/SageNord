@@ -22,7 +22,8 @@ import { buildScenes, SCENE_COUNT, type SceneSet } from "./scenes";
 export interface SceneRenderer {
   /** global scroll progress, 0..1 */
   setProgress(t: number): void;
-  setPointer(x: number, y: number, active: boolean): void;
+  /** pointer in client (viewport) pixel coordinates */
+  setPointer(clientX: number, clientY: number, active: boolean): void;
   setTheme(): void;
   resize(): void;
   start(): void;
@@ -178,11 +179,14 @@ export class PointsRenderer implements SceneRenderer {
     if (!this.running && !reduceMotion()) this.start();
   }
 
-  setPointer(x: number, y: number, active: boolean) {
+  setPointer(clientX: number, clientY: number, active: boolean) {
+    const r = this.renderer.domElement.getBoundingClientRect();
+    const nx = r.width ? ((clientX - r.left) / r.width) * 2 - 1 : 0;
+    const ny = r.height ? -(((clientY - r.top) / r.height) * 2 - 1) : 0;
     const h = Math.tan((this.camera.fov * Math.PI) / 360) * this.camera.position.z;
     const w = h * this.camera.aspect;
-    this.mouse.x = x * w;
-    this.mouse.y = y * h;
+    this.mouse.x = nx * w;
+    this.mouse.y = ny * h;
     this.mouse.active = active;
   }
 
@@ -209,12 +213,13 @@ export class PointsRenderer implements SceneRenderer {
   }
 
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const el = this.renderer.domElement;
+    const w = el.clientWidth || window.innerWidth;
+    const h = el.clientHeight || window.innerHeight;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.points.position.x = isMobile() ? 0 : 0.9;
+    this.points.position.x = 0;
   }
 
   start() {

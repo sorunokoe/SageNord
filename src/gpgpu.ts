@@ -122,8 +122,9 @@ void main(){
   vec3 toTarget = target - pos;
   vec3 flow = curlNoise(pos * 0.45 + vec3(0.0, 0.0, uTime * 0.06));
 
-  // attraction eases toward target; flow keeps it alive
-  vec3 vel = toTarget * 2.4 + flow * 0.22;
+  // attraction eases toward target; flow keeps it alive (kept gentle so the
+  // target form reads clearly rather than dissolving into noise)
+  vec3 vel = toTarget * 2.6 + flow * 0.11;
 
   if (uMouseActive > 0.5){
     vec3 d = pos - uMouse;
@@ -262,7 +263,7 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.material = new ShaderMaterial({
       uniforms: {
         uPosition: { value: null },
-        uSize: { value: 0.05 * Math.min(window.devicePixelRatio || 1, 2) },
+        uSize: { value: 0.042 * Math.min(window.devicePixelRatio || 1, 2) },
         uColorA: { value: new Color() },
         uColorB: { value: new Color() },
         uOpacity: { value: 0.85 },
@@ -346,10 +347,13 @@ export class FlowFieldRenderer implements SceneRenderer {
     if (!this.running && !reduceMotion()) this.start();
   }
 
-  setPointer(x: number, y: number, active: boolean) {
+  setPointer(clientX: number, clientY: number, active: boolean) {
+    const r = this.renderer.domElement.getBoundingClientRect();
+    const nx = r.width ? ((clientX - r.left) / r.width) * 2 - 1 : 0;
+    const ny = r.height ? -(((clientY - r.top) / r.height) * 2 - 1) : 0;
     const h = Math.tan((this.camera.fov * Math.PI) / 360) * this.camera.position.z;
     const w = h * this.camera.aspect;
-    this.mouse.set(x * w - this.points.position.x, y * h, 0);
+    this.mouse.set(nx * w, ny * h, 0);
     this.mouseActive = active ? 1 : 0;
   }
 
@@ -357,7 +361,9 @@ export class FlowFieldRenderer implements SceneRenderer {
     const dark = document.documentElement.getAttribute("data-theme") === "dark";
     this.material.uniforms.uColorA.value = cssColor("--particle", "#14203a");
     this.material.uniforms.uColorB.value = cssColor("--particle-accent", "#1b6ef3");
-    this.material.uniforms.uOpacity.value = dark ? 0.9 : 0.72;
+    // Additive in dark accumulates; keep per-particle opacity low so dense
+    // regions glow rather than clip to white.
+    this.material.uniforms.uOpacity.value = dark ? 0.55 : 0.72;
     this.material.blending = dark ? AdditiveBlending : NormalBlending;
     this.material.needsUpdate = true;
   }
@@ -367,12 +373,13 @@ export class FlowFieldRenderer implements SceneRenderer {
   }
 
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const el = this.renderer.domElement;
+    const w = el.clientWidth || window.innerWidth;
+    const h = el.clientHeight || window.innerHeight;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.points.position.x = window.matchMedia("(max-width: 720px)").matches ? 0 : 0.9;
+    this.points.position.x = 0;
   }
 
   start() {
