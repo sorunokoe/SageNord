@@ -6,9 +6,8 @@
 
 import "./style.css";
 import { initThemeToggle, onThemeChange } from "./theme";
-import { PointsRenderer, type SceneRenderer } from "./renderer";
-import { FlowFieldRenderer } from "./gpgpu";
-import { initScroll } from "./scroll";
+import type { SceneRenderer } from "./renderer";
+import { initReveals, initScrollRig } from "./scroll";
 
 const isMobile = window.matchMedia("(max-width: 720px)").matches;
 
@@ -38,22 +37,38 @@ initThemeToggle();
   requestAnimationFrame(() => line.classList.add("is-in"));
 })();
 
-/* WebGL scene + scroll story */
-(function initScene() {
+/* Reveal content immediately (does not wait on three.js) */
+initReveals();
+
+/* Defer the heavy 3D bundle until after first paint — protects LCP/INP.
+   The canvas is decorative; the site is complete before it loads. */
+function whenIdle(fn: () => void) {
+  const w = window as unknown as { requestIdleCallback?: (cb: () => void) => void };
+  if (reduceMotion) {
+    // still load (static frame), but no rush
+    w.requestIdleCallback ? w.requestIdleCallback(fn) : setTimeout(fn, 200);
+    return;
+  }
+  if (document.readyState === "complete") w.requestIdleCallback?.(fn) ?? setTimeout(fn, 1);
+  else window.addEventListener("load", () =>
+    w.requestIdleCallback ? w.requestIdleCallback(fn) : setTimeout(fn, 1)
+  );
+}
+
+whenIdle(async () => {
   const canvas = document.getElementById("scene") as HTMLCanvasElement | null;
   if (!canvas) return;
+  const { PointsRenderer } = await import("./renderer");
   let renderer: SceneRenderer;
   try {
-    // GPGPU flow-field on capable desktops; lighter CPU points on
-    // mobile / reduced-motion (avoids the GPGPU+scroll fps cost).
     if (isMobile || reduceMotion) {
       renderer = new PointsRenderer(canvas);
     } else {
       try {
+        const { FlowFieldRenderer } = await import("./gpgpu");
         renderer = new FlowFieldRenderer(canvas);
       } catch (gpuErr) {
         console.warn("GPGPU unavailable — falling back to CPU points.", gpuErr);
-        // A canvas can hold only one WebGL context; swap in a fresh one.
         const fresh = canvas.cloneNode(false) as HTMLCanvasElement;
         canvas.replaceWith(fresh);
         renderer = new PointsRenderer(fresh);
@@ -62,18 +77,6 @@ initThemeToggle();
   } catch (err) {
     console.warn("WebGL unavailable — running without the canvas.", err);
     canvas.style.display = "none";
-    // Still reveal chapter copy via the scroll rig with a no-op renderer.
-    initScroll({
-      setProgress() {},
-      setPointer() {},
-      setEnergy() {},
-      setHover() {},
-      setTheme() {},
-      resize() {},
-      start() {},
-      stop() {},
-      dispose() {},
-    });
     return;
   }
   onThemeChange(() => renderer.setTheme());
@@ -81,5 +84,5 @@ initThemeToggle();
   if (import.meta.env.DEV) {
     (window as unknown as { __renderer?: SceneRenderer }).__renderer = renderer;
   }
-  initScroll(renderer);
-})();
+  initScrollRig(renderer);
+});

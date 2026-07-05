@@ -207,6 +207,10 @@ export class FlowFieldRenderer implements SceneRenderer {
   private scrollEnergy = 0; // decays; raised by scroll velocity
   private hover = 0; // sustained boost while hovering the CTA
   private energy = 0; // eased actual value fed to shaders
+  private paX = 0; // parallax target (pointer)
+  private paY = 0;
+  private camX = 0;
+  private camY = 0;
 
   private raf = 0;
   private lastT = 0;
@@ -389,6 +393,9 @@ export class FlowFieldRenderer implements SceneRenderer {
     const w = h * this.camera.aspect;
     this.mouse.set(nx * w - this.points.position.x, ny * h, 0);
     this.mouseActive = active ? 1 : 0;
+    // parallax target (subtle camera drift toward the pointer, for depth)
+    this.paX = active ? nx : 0;
+    this.paY = active ? ny : 0;
   }
 
   private applyTheme() {
@@ -458,7 +465,11 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.material.uniforms.uPosition.value =
       this.gpu.getCurrentRenderTarget(this.posVar).texture;
     this.camZ += (this.camZTarget - this.camZ) * (1 - Math.pow(0.01, dt));
-    this.camera.position.z = this.camZ;
+    // parallax: camera drifts subtly toward the pointer for depth
+    const pk = 1 - Math.pow(0.02, dt);
+    this.camX += (this.paX * 0.35 - this.camX) * pk;
+    this.camY += (this.paY * 0.25 - this.camY) * pk;
+    this.camera.position.set(this.camX, this.camY, this.camZ);
     this.points.rotation.y = Math.sin((now / 1000) * 0.05) * 0.16;
     this.renderer.render(this.scene, this.camera);
     this.monitor(dt);

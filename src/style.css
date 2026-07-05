@@ -235,6 +235,7 @@ main,
 
 /* ---- Chapters ------------------------------------------- */
 .chapter {
+  position: relative; /* positioning context for the hero scroll-cue */
   min-height: 100svh;
   display: flex;
   align-items: center;
@@ -266,8 +267,8 @@ main,
 
 /* ---- Hero ------------------------------------------------ */
 .hero__inner {
-  max-width: 20ch;
-  margin: 0; /* left-align hero; orb sits to the right */
+  max-width: 42rem;
+  margin: 0; /* left-align hero; field sits to the right */
 }
 .hero__eyebrow {
   font-size: 0.85rem;
@@ -280,7 +281,21 @@ main,
   font-size: clamp(3rem, 1.5rem + 9vw, 9rem);
   letter-spacing: -0.04em;
   line-height: 0.95;
-  margin-bottom: 2.25rem;
+  max-width: 11ch;
+  margin-bottom: 1.5rem;
+}
+.hero__subhead {
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.4rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 34rem;
+  margin-bottom: 2rem;
+}
+.hero__proof {
+  margin-top: 1.75rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
 }
 .hero__line .word {
   display: inline-block;
@@ -333,6 +348,55 @@ main,
 .btn--large {
   padding: 1.1rem 2.4rem;
   font-size: clamp(1.05rem, 1rem + 0.5vw, 1.4rem);
+}
+.btn--sm {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+}
+
+/* ---- Header actions ------------------------------------- */
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+@media (max-width: 480px) {
+  .site-header__actions .btn--sm {
+    display: none; /* CTA still in hero + contact */
+  }
+}
+
+/* ---- Proof band ----------------------------------------- */
+.proof {
+  list-style: none;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  max-width: 40rem;
+}
+.proof li {
+  background: color-mix(in srgb, var(--bg-elev) 55%, transparent);
+  backdrop-filter: blur(6px);
+  padding: 1.1rem 1.25rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+.proof span {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.15rem;
+}
+@media (min-width: 720px) {
+  .proof {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* ---- Scroll cue ----------------------------------------- */
@@ -494,6 +558,18 @@ main,
   color: var(--ink-soft);
   font-size: clamp(1.05rem, 1rem + 0.5vw, 1.4rem);
   margin-bottom: 2.5rem;
+}
+.contact__email {
+  margin-top: 1.5rem;
+  color: var(--ink-faint);
+  font-size: 0.95rem;
+}
+.contact__email a {
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+}
+.contact__email a:hover {
+  color: var(--accent);
 }
 
 /* ---- Footer --------------------------------------------- */

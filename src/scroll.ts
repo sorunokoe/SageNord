@@ -12,13 +12,21 @@ import type { SceneRenderer } from "./renderer";
 const reduceMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function initScroll(renderer: SceneRenderer) {
+/**
+ * Reveal chapter copy immediately — runs before the (deferred) 3D loads so
+ * above-the-fold content and CTAs are visible without waiting on three.js.
+ */
+export function initReveals() {
   revealChapters();
+  if (reduceMotion()) document.documentElement.classList.add("reduced");
+}
+
+/** Wire the smooth-scroll rig to a renderer (called once the renderer loads). */
+export function initScrollRig(renderer: SceneRenderer) {
   bindPointer(renderer);
 
   if (reduceMotion()) {
     // Native scroll; renderer stays on its static composition.
-    document.documentElement.classList.add("reduced");
     return;
   }
 
