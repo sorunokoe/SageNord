@@ -1,16 +1,13 @@
 /* ============================================================
    Scene target generators for the scroll story.
-   Abstract / brand visual language (aurora, brand mark,
-   constellation, terrain). Each returns Float32Array(count*3)
-   centered on origin. The renderer lerps between consecutive
-   scenes as global scroll progress advances.
-
-   Scene order (keyframes):
-     0 Hero      → brand mark (calm orb)
-     1 Belief    → aurora band (flowing curtain)
-     2 Services  → constellation (nodes)
-     3 0 → 1     → terrain (flowing plane)
-     4 Contact   → brand mark at rest (orb)
+   Abstract / brand visual language, one distinct form per chapter:
+     0 Hero      → airy volumetric orb (brand mark)
+     1 Belief    → layered aurora curtain
+     2 Services  → spiral (structure / craft)
+     3 0 → 1     → flowing terrain (idea → form)
+     4 Contact   → calm orb (return, at rest)
+   Each returns Float32Array(count*3) centered on the origin,
+   scaled to a comparable bounding box so morphs stay balanced.
    ============================================================ */
 
 const TAU = Math.PI * 2;
@@ -19,77 +16,88 @@ function rand(a: number, b: number) {
   return a + Math.random() * (b - a);
 }
 
-/** Calm brand mark — a Fibonacci sphere (orb). */
+/** Airy volumetric orb — a soft-edged glowing sphere (not a hard shell). */
 export function orb(count: number): Float32Array {
   const p = new Float32Array(count * 3);
-  const r = 1.15;
-  const golden = Math.PI * (3 - Math.sqrt(5));
+  const R = 1.2;
   for (let i = 0; i < count; i++) {
-    const y = 1 - (i / (count - 1)) * 2;
-    const rad = Math.sqrt(1 - y * y);
-    const th = golden * i;
-    p[i * 3] = Math.cos(th) * rad * r;
-    p[i * 3 + 1] = y * r;
-    p[i * 3 + 2] = Math.sin(th) * rad * r;
+    // uniform direction on the sphere
+    const u = Math.random() * 2 - 1;
+    const th = Math.random() * TAU;
+    const s = Math.sqrt(1 - u * u);
+    // radius biased toward the surface but with soft inward falloff → airy
+    const r = R * (1 - Math.pow(Math.random(), 2.2) * 0.5);
+    p[i * 3] = s * Math.cos(th) * r;
+    p[i * 3 + 1] = u * r;
+    p[i * 3 + 2] = s * Math.sin(th) * r;
   }
   return p;
 }
 
-/** Aurora curtain — vertical filaments waving across a wide band. */
+/** Layered aurora curtain — waving vertical filaments in a few depth layers. */
 export function aurora(count: number): Float32Array {
   const p = new Float32Array(count * 3);
+  const layers = 5;
+  const cols = 70; // filament columns per layer
   for (let i = 0; i < count; i++) {
-    const x = rand(-2.3, 2.3);
-    const wave = Math.sin(x * 1.6) * 0.35 + Math.sin(x * 3.1) * 0.12;
-    // vertical filament: cluster around a waving baseline
-    const y = wave + rand(-0.9, 0.9) * (0.6 + 0.4 * Math.random());
-    const z = rand(-0.8, 0.8);
-    p[i * 3] = x;
-    p[i * 3 + 1] = y;
-    p[i * 3 + 2] = z;
+    const layer = i % layers;
+    const z = (layer / (layers - 1) - 0.5) * 1.3;
+    const phase = layer * 1.7;
+    const col = Math.floor(Math.random() * cols);
+    const cx = (col / (cols - 1)) * 4.4 - 2.2; // column center across width
+    const baseline = Math.sin(cx * 1.2 + phase) * 0.32 + Math.sin(cx * 2.7) * 0.1;
+    // vertical filament: dense at the base, thinning upward (pow biases low)
+    const up = Math.pow(Math.random(), 0.55) * 1.9;
+    p[i * 3] = cx + rand(-0.012, 0.012);
+    p[i * 3 + 1] = baseline - 0.55 + up;
+    p[i * 3 + 2] = z + rand(-0.05, 0.05);
   }
   return p;
 }
 
-/** Constellation — a wide scattered field with a few bright clusters. */
-export function constellation(count: number): Float32Array {
+/** Spiral — a multi-arm logarithmic spiral disk with a bright core. */
+export function spiral(count: number): Float32Array {
   const p = new Float32Array(count * 3);
-  const nodes = [
-    [-1.9, 0.7],
-    [-0.9, -0.6],
-    [0.2, 0.5],
-    [1.2, -0.4],
-    [2.0, 0.6],
-  ];
+  const arms = 3;
+  const turns = 1.15;
+  const R = 1.7;
   for (let i = 0; i < count; i++) {
-    if (i % 3 === 0) {
-      // clustered near a node
-      const n = nodes[i % nodes.length];
-      p[i * 3] = n[0] + rand(-0.28, 0.28);
-      p[i * 3 + 1] = n[1] + rand(-0.28, 0.28);
-      p[i * 3 + 2] = rand(-0.4, 0.4);
-    } else {
-      // sparse background field
-      p[i * 3] = rand(-2.5, 2.5);
-      p[i * 3 + 1] = rand(-1.5, 1.5);
-      p[i * 3 + 2] = rand(-0.9, 0.9);
+    if (i % 9 === 0) {
+      // core concentration
+      const u = Math.random() * 2 - 1;
+      const th = Math.random() * TAU;
+      const s = Math.sqrt(1 - u * u);
+      const r = 0.28 * Math.pow(Math.random(), 0.5);
+      p[i * 3] = s * Math.cos(th) * r;
+      p[i * 3 + 1] = u * r * 0.6;
+      p[i * 3 + 2] = s * Math.sin(th) * r;
+      continue;
     }
+    const t = Math.pow(Math.random(), 0.7); // more density inward
+    const arm = i % arms;
+    const spread = (1 - t) * 0.5 + 0.04; // arms tighten outward
+    const angle =
+      t * turns * TAU + (arm * TAU) / arms + rand(-spread, spread);
+    const radius = t * R;
+    p[i * 3] = Math.cos(angle) * radius;
+    p[i * 3 + 1] = Math.sin(angle) * radius * 0.9;
+    p[i * 3 + 2] = rand(-0.12, 0.12) * (0.3 + t);
   }
   return p;
 }
 
-/** Flowing terrain — a tilted plane with layered wave height. */
+/** Flowing terrain — a smooth layered wave sheet, gently tilted. */
 export function terrain(count: number): Float32Array {
   const p = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const x = rand(-2.6, 2.6);
-    const z = rand(-2.2, 1.4);
+    const z = rand(-2.0, 1.4);
     const h =
-      Math.sin(x * 1.3 + z * 0.7) * 0.3 +
-      Math.sin(x * 2.7 - z * 1.1) * 0.12 +
-      z * 0.35; // gentle tilt toward viewer
+      Math.sin(x * 1.1 + z * 0.6) * 0.26 +
+      Math.sin(x * 0.5 - z * 1.3) * 0.16 +
+      z * 0.32; // gentle tilt toward the viewer
     p[i * 3] = x;
-    p[i * 3 + 1] = h - 0.3;
+    p[i * 3 + 1] = h - 0.35;
     p[i * 3 + 2] = z;
   }
   return p;
@@ -97,7 +105,6 @@ export function terrain(count: number): Float32Array {
 
 export interface SceneSet {
   positions: Float32Array[];
-  /** camera z distance per scene (subtle dolly) */
   cameraZ: number[];
 }
 
@@ -106,11 +113,11 @@ export function buildScenes(count: number): SceneSet {
     positions: [
       orb(count),
       aurora(count),
-      constellation(count),
+      spiral(count),
       terrain(count),
       orb(count),
     ],
-    cameraZ: [4.4, 4.0, 4.8, 4.2, 4.5],
+    cameraZ: [4.4, 4.2, 4.6, 4.4, 4.4],
   };
 }
 

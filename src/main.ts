@@ -66,6 +66,8 @@ initThemeToggle();
     initScroll({
       setProgress() {},
       setPointer() {},
+      setEnergy() {},
+      setHover() {},
       setTheme() {},
       resize() {},
       start() {},
@@ -76,5 +78,8 @@ initThemeToggle();
   }
   onThemeChange(() => renderer.setTheme());
   window.addEventListener("resize", () => renderer.resize(), { passive: true });
+  if (import.meta.env.DEV) {
+    (window as unknown as { __renderer?: SceneRenderer }).__renderer = renderer;
+  }
   initScroll(renderer);
 })();

@@ -24,6 +24,10 @@ export interface SceneRenderer {
   setProgress(t: number): void;
   /** pointer in client (viewport) pixel coordinates */
   setPointer(clientX: number, clientY: number, active: boolean): void;
+  /** raise field energy 0..1 (scroll velocity); decays over time */
+  setEnergy(e: number): void;
+  /** sustained energy boost while on a call-to-action */
+  setHover(on: boolean): void;
   setTheme(): void;
   resize(): void;
   start(): void;
@@ -83,6 +87,9 @@ export class PointsRenderer implements SceneRenderer {
   private camZTarget = 4.4;
 
   private mouse = { x: 0, y: 0, active: false };
+  private scrollEnergy = 0;
+  private hover = 0;
+  private energy = 0;
   private raf = 0;
   private lastT = 0;
   private running = false;
@@ -179,6 +186,15 @@ export class PointsRenderer implements SceneRenderer {
     if (!this.running && !reduceMotion()) this.start();
   }
 
+  setEnergy(e: number) {
+    this.scrollEnergy = Math.max(this.scrollEnergy, Math.min(1, e));
+    if (!this.running && !reduceMotion()) this.start();
+  }
+  setHover(on: boolean) {
+    this.hover = on ? 0.75 : 0;
+    if (!this.running && !reduceMotion()) this.start();
+  }
+
   setPointer(clientX: number, clientY: number, active: boolean) {
     const r = this.renderer.domElement.getBoundingClientRect();
     const nx = r.width ? ((clientX - r.left) / r.width) * 2 - 1 : 0;
@@ -258,7 +274,11 @@ export class PointsRenderer implements SceneRenderer {
     const cur = this.current;
     const tgt = this.target;
     const ease = 1 - Math.pow(0.002, dt);
-    const drift = 0.035;
+    // energy: scroll pulse decays, hover sustains; scales the idle drift
+    this.scrollEnergy *= Math.exp(-dt * 2.6);
+    const targetE = Math.max(this.scrollEnergy, this.hover);
+    this.energy += (targetE - this.energy) * (1 - Math.pow(0.02, dt));
+    const drift = 0.02 + this.energy * 0.06;
     const R = 0.5;
     const R2 = R * R;
     for (let i = 0; i < this.count; i++) {

@@ -113,6 +113,7 @@ uniform float uTime;
 uniform float uDelta;
 uniform vec3 uMouse;
 uniform float uMouseActive;
+uniform float uEnergy;
 ${NOISE_GLSL}
 void main(){
   vec2 uv = gl_FragCoord.xy / resolution.xy;
@@ -122,9 +123,9 @@ void main(){
   vec3 toTarget = target - pos;
   vec3 flow = curlNoise(pos * 0.45 + vec3(0.0, 0.0, uTime * 0.06));
 
-  // attraction eases toward target; flow keeps it alive (kept gentle so the
-  // target form reads clearly rather than dissolving into noise)
-  vec3 vel = toTarget * 2.6 + flow * 0.11;
+  // attraction eases toward target; flow scales with energy so the form is
+  // crisp at rest (reading) and disperses/flows while scrolling or at the CTA.
+  vec3 vel = toTarget * 2.6 + flow * (0.05 + uEnergy * 0.42);
 
   if (uMouseActive > 0.5){
     vec3 d = pos - uMouse;
@@ -158,6 +159,7 @@ const RENDER_FRAG = /* glsl */ `
 uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform float uOpacity;
+uniform float uBrightness;
 varying float vRand;
 void main(){
   vec2 c = gl_PointCoord - 0.5;
@@ -165,7 +167,7 @@ void main(){
   if (d > 0.5) discard;
   float a = smoothstep(0.5, 0.05, d);
   vec3 col = mix(uColorA, uColorB, vRand);
-  gl_FragColor = vec4(col, a * uOpacity);
+  gl_FragColor = vec4(col * uBrightness, a * uOpacity * uBrightness);
 }
 `;
 
@@ -188,6 +190,9 @@ export class FlowFieldRenderer implements SceneRenderer {
   private camZTarget = 4.4;
   private mouse = new Vector3();
   private mouseActive = 0;
+  private scrollEnergy = 0; // decays; raised by scroll velocity
+  private hover = 0; // sustained boost while hovering the CTA
+  private energy = 0; // eased actual value fed to shaders
 
   private raf = 0;
   private lastT = 0;
@@ -242,6 +247,7 @@ export class FlowFieldRenderer implements SceneRenderer {
       uDelta: { value: 0.016 },
       uMouse: { value: this.mouse },
       uMouseActive: { value: 0 },
+      uEnergy: { value: 0 },
     });
     const err = this.gpu.init();
     if (err) throw new Error("GPGPU init failed: " + err);
@@ -267,6 +273,7 @@ export class FlowFieldRenderer implements SceneRenderer {
         uColorA: { value: new Color() },
         uColorB: { value: new Color() },
         uOpacity: { value: 0.85 },
+        uBrightness: { value: 1 },
       },
       vertexShader: RENDER_VERT,
       fragmentShader: RENDER_FRAG,
@@ -347,6 +354,17 @@ export class FlowFieldRenderer implements SceneRenderer {
     if (!this.running && !reduceMotion()) this.start();
   }
 
+  /** Raise field energy (0..1) — from scroll velocity. Decays over time. */
+  setEnergy(e: number) {
+    this.scrollEnergy = Math.max(this.scrollEnergy, Math.min(1, e));
+    if (!this.running && !reduceMotion()) this.start();
+  }
+  /** Sustained boost while the visitor is on a call-to-action. */
+  setHover(on: boolean) {
+    this.hover = on ? 0.75 : 0;
+    if (!this.running && !reduceMotion()) this.start();
+  }
+
   setPointer(clientX: number, clientY: number, active: boolean) {
     const r = this.renderer.domElement.getBoundingClientRect();
     const nx = r.width ? ((clientX - r.left) / r.width) * 2 - 1 : 0;
@@ -406,11 +424,18 @@ export class FlowFieldRenderer implements SceneRenderer {
     this.raf = 0;
     const dt = Math.min((now - this.lastT) / 1000, 0.05);
     this.lastT = now;
+    // energy: scroll pulse decays; hover sustains; eased for smoothness
+    this.scrollEnergy *= Math.exp(-dt * 2.6);
+    const targetE = Math.max(this.scrollEnergy, this.hover);
+    this.energy += (targetE - this.energy) * (1 - Math.pow(0.02, dt));
+
     const u = this.posVar.material.uniforms;
     u.uTime.value = now / 1000;
     u.uDelta.value = dt;
     u.uMouse.value = this.mouse;
     u.uMouseActive.value = this.mouseActive;
+    u.uEnergy.value = this.energy;
+    this.material.uniforms.uBrightness.value = 1 + this.energy * 0.45;
     this.gpu.compute();
     this.material.uniforms.uPosition.value =
       this.gpu.getCurrentRenderTarget(this.posVar).texture;

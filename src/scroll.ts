@@ -34,7 +34,11 @@ export function initScroll(renderer: SceneRenderer) {
 
   lenis.on("scroll", () => {
     renderer.setProgress(lenis.progress || 0);
+    // scroll velocity energizes the field; it settles when reading stops
+    renderer.setEnergy(Math.min(1, Math.abs(lenis.velocity || 0) / 28));
   });
+
+  bindCTA(renderer);
 
   // Debug hook so automated checks can drive real (Lenis) scroll. Dev only.
   if (import.meta.env.DEV) {
@@ -66,6 +70,15 @@ function revealChapters() {
     { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
   );
   items.forEach((el) => io.observe(el));
+}
+
+/** The field energizes and brightens while the visitor is on a CTA. */
+function bindCTA(renderer: SceneRenderer) {
+  const ctas = document.querySelectorAll<HTMLElement>(".btn--primary");
+  ctas.forEach((el) => {
+    el.addEventListener("pointerenter", () => renderer.setHover(true));
+    el.addEventListener("pointerleave", () => renderer.setHover(false));
+  });
 }
 
 function bindPointer(renderer: SceneRenderer) {
