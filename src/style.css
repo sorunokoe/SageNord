@@ -139,6 +139,23 @@ main,
   z-index: 1;
 }
 
+/* ---- Wordmark (floating, no nav bar) ---------------------- */
+.wordmark {
+  position: fixed;
+  top: clamp(1rem, 3vw, 1.5rem);
+  left: clamp(1rem, 3vw, 1.5rem);
+  z-index: 10;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.25s var(--ease);
+}
+.wordmark:hover {
+  color: var(--accent);
+}
+
 /* ---- Theme toggle (floating, no nav bar) ----------------- */
 .theme-toggle {
   position: fixed;
@@ -205,6 +222,10 @@ main,
   text-transform: uppercase;
   color: var(--ink-soft);
   margin-bottom: 1.5rem;
+}
+.hero__eyebrow-brand {
+  color: var(--ink);
+  font-weight: 700;
 }
 .hero__line {
   font-size: clamp(3rem, 1.5rem + 9vw, 9rem);
@@ -311,6 +332,10 @@ main,
 }
 .site-footer__mission {
   color: var(--ink-soft);
+}
+.site-footer strong {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* ---- Reveal --------------------------------------------- */
