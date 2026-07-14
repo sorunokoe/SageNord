@@ -197,24 +197,29 @@ main,
   position: relative; /* positioning context for the hero scroll-cue */
   min-height: 100svh;
   display: flex;
-  align-items: center;
-  padding: 8rem var(--pad);
+  align-items: center; /* copy column left; particle headline clusters right */
+  padding: 7rem var(--pad);
 }
 .chapter__inner {
   width: 100%;
-  max-width: 44rem;
-  margin: 0;
-  padding-right: clamp(0rem, 4vw, 3rem);
+  max-width: 33rem; /* comfortable measure; stays left of the particle text */
+  /* editorial off-center: real left margin, not jammed to the edge */
+  margin: 0 0 0 clamp(1.25rem, 6vw, 7rem);
 }
 @media (max-width: 900px) {
   .chapter__inner {
     max-width: 100%;
+    margin-left: 0;
   }
 }
 /* ---- Hero ------------------------------------------------ */
 .hero__inner {
-  max-width: 42rem;
-  margin: 0; /* left-align hero; field sits to the right */
+  max-width: 36rem;
+}
+@media (max-width: 900px) {
+  .hero__inner {
+    margin-left: 0;
+  }
 }
 .hero__eyebrow {
   font-size: 0.85rem;
