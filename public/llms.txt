@@ -1,18 +1,19 @@
 # Sage Nord
 
-> Sage Nord (legal entity: Saga ApS) is a software engineering studio based
-> in Denmark. It helps product teams turn ideas into software and AI that
-> ship, and hold up.
+> Sage Nord (legal entity: Saga ApS) is a software and AI company based
+> in Denmark. It builds its own AI products, and helps other teams build
+> theirs.
 
-Mission: To empower people through software.
+Mission: Software worth trusting.
 Defining value: Trust. Software reliable enough that people can depend on it.
 
 ## About
-- A senior software studio. You work directly with the people doing the
-  engineering, with no layers and no handoffs.
+- Builds its own AI products for consumers and businesses.
+- Also builds AI and software products for other companies, from early-stage
+  work to enterprise and public-sector tenders.
+- You work directly with the people doing the engineering, with no layers
+  and no handoffs.
 - Based in Denmark; serves the Nordics and Europe.
-- Consulting, research, development, integration, and maintenance for
-  software products and practical AI.
 
 ## Contact
 - Email: hello@sagenord.com

@@ -1,9 +1,10 @@
 # Sage Nord
 
-The website for **Sage Nord** (legal entity: Saga ApS) — a software
-engineering studio.
+The website for **Sage Nord** (legal entity: Saga ApS), a software and AI
+company. We build our own AI products and help other teams build theirs,
+from early-stage work to enterprise and public-sector tenders.
 
-> To empower people through software.
+> Software worth trusting.
 
 Minimalist single-page site with a three.js particle-morph hero, dual
 light/dark theme, and content-first HTML that reads fully with JavaScript off.
