@@ -80,9 +80,9 @@ function revealChapters() {
   items.forEach((el) => io.observe(el));
 }
 
-/** The field energizes and brightens while the visitor is on a CTA. */
+/** The field energizes and brightens while the visitor is on the contact link. */
 function bindCTA(renderer: SceneRenderer) {
-  const ctas = document.querySelectorAll<HTMLElement>(".btn--primary");
+  const ctas = document.querySelectorAll<HTMLElement>(".contact__email a");
   ctas.forEach((el) => {
     el.addEventListener("pointerenter", () => renderer.setHover(true));
     el.addEventListener("pointerleave", () => renderer.setHover(false));
