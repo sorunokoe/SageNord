@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Sage Nord — senior iOS & mobile architecture. To empower people through software.",
+  "description": "Sage Nord, software and AI company. Software worth trusting.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

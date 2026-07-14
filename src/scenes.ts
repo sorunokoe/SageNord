@@ -10,8 +10,6 @@
    scaled to a comparable bounding box so morphs stay balanced.
    ============================================================ */
 
-import { sampleGlyph } from "./glyphs";
-
 const TAU = Math.PI * 2;
 
 function rand(a: number, b: number) {
@@ -110,25 +108,16 @@ export interface SceneSet {
   cameraZ: number[];
 }
 
-// Suppress "unused" while the abstract generators stay as fallbacks.
-void aurora;
-void spiral;
-void terrain;
-
-/**
- * All-in particle typography: each scene is a word/mark the particles form,
- * morphing between them on scroll. Orb bookends give a calm open/close.
- */
 export function buildScenes(count: number): SceneSet {
   return {
     positions: [
-      sampleGlyph(count, { lines: ["Software", "worth", "trusting"], worldWidth: 3.0 }),
-      sampleGlyph(count, { lines: ["Built", "to last"], worldWidth: 3.0 }),
-      sampleGlyph(count, { lines: ["What I", "build"], worldWidth: 3.0 }),
-      sampleGlyph(count, { lines: ["0 → 1"], worldWidth: 2.0 }),
-      sampleGlyph(count, { lines: ["Let's", "talk"], worldWidth: 2.6 }),
+      orb(count),
+      aurora(count),
+      spiral(count),
+      terrain(count),
+      orb(count),
     ],
-    cameraZ: [4.4, 4.4, 4.4, 4.4, 4.4],
+    cameraZ: [4.4, 4.2, 4.6, 4.4, 4.4],
   };
 }
 

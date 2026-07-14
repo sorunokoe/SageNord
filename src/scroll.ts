@@ -41,11 +41,11 @@ export function initScrollRig(renderer: SceneRenderer) {
   gsap.ticker.lagSmoothing(0);
 
   lenis.on("scroll", () => {
+    renderer.setProgress(lenis.progress || 0);
     // scroll velocity energizes the field; it settles when reading stops
     renderer.setEnergy(Math.min(1, Math.abs(lenis.velocity || 0) / 28));
   });
 
-  bindScenes(renderer);
   bindCTA(renderer);
 
   // Debug hook so automated checks can drive real (Lenis) scroll. Dev only.
@@ -53,28 +53,8 @@ export function initScrollRig(renderer: SceneRenderer) {
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
   }
 
-  renderer.setScene(0);
+  renderer.setProgress(0);
   renderer.start();
-}
-
-/** Snap the particle word to whichever chapter is centered in the viewport. */
-function bindScenes(renderer: SceneRenderer) {
-  const sections = Array.from(
-    document.querySelectorAll<HTMLElement>("[data-scene]")
-  );
-  if (!sections.length) return;
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          const i = Number((e.target as HTMLElement).dataset.scene || 0);
-          renderer.setScene(i);
-        }
-      }
-    },
-    { threshold: 0.55 }
-  );
-  sections.forEach((s) => io.observe(s));
 }
 
 /** Fade + rise each chapter's content as it enters the viewport. */
@@ -100,9 +80,9 @@ function revealChapters() {
   items.forEach((el) => io.observe(el));
 }
 
-/** The field energizes and brightens while the visitor is on a CTA. */
+/** The field energizes and brightens while the visitor is on the contact link. */
 function bindCTA(renderer: SceneRenderer) {
-  const ctas = document.querySelectorAll<HTMLElement>(".btn--primary");
+  const ctas = document.querySelectorAll<HTMLElement>(".contact__email a");
   ctas.forEach((el) => {
     el.addEventListener("pointerenter", () => renderer.setHover(true));
     el.addEventListener("pointerleave", () => renderer.setHover(false));

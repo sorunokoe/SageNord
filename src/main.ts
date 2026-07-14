@@ -79,8 +79,6 @@ whenIdle(async () => {
     canvas.style.display = "none";
     return;
   }
-  // Particles now render the display headlines; hand them over from crisp text.
-  document.documentElement.classList.add("particles-on");
   onThemeChange(() => renderer.setTheme());
   window.addEventListener("resize", () => renderer.resize(), { passive: true });
   if (import.meta.env.DEV) {

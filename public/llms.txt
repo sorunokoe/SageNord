@@ -1,27 +1,19 @@
 # Sage Nord
 
-> Sage Nord (legal entity: Saga ApS) is a senior iOS and mobile architecture
-> studio based in Denmark. It helps sports-tech and Danish product teams turn
-> ideas into apps and AI that ship — and hold up.
+> Sage Nord (legal entity: Saga ApS) is a software and AI company based
+> in Denmark. It builds its own AI products, and helps other teams build
+> theirs.
 
-Mission: To empower people through software.
-Defining value: Trust — software reliable enough that people can depend on it.
+Mission: Software worth trusting.
+Defining value: Trust. Software reliable enough that people can depend on it.
 
 ## About
-- Founder: Yeskendir Salgara, former iOS Tech Lead at Trackman.
-- You work directly with the senior architect doing the work — no handoffs.
+- Builds its own AI products for consumers and businesses.
+- Also builds AI and software products for other companies, from early-stage
+  work to enterprise and public-sector tenders.
+- You work directly with the people doing the engineering, with no layers
+  and no handoffs.
 - Based in Denmark; serves the Nordics and Europe.
-
-## Services
-- Consult: architecture reviews, technical strategy, unblocking mobile teams.
-- Research: prototypes and technical due diligence to de-risk roadmaps.
-- Develop: senior iOS/mobile engineering — SwiftUI, performance, on-device AI.
-- Integrate: connecting apps to platforms, data, and AI models cleanly.
-- Maintain: ongoing stewardship that keeps software trustworthy after launch.
-
-## Focus (0 → 1)
-- Apps: native iOS/mobile apps from prototype to App Store.
-- AI: practical, private, on-device and product AI woven into the experience.
 
 ## Contact
 - Email: hello@sagenord.com

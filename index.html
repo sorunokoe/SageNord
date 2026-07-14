@@ -4,32 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Sage Nord — Senior iOS &amp; Mobile Architecture</title>
+    <title>Sage Nord · Software worth trusting</title>
     <meta
       name="description"
-      content="Sage Nord is a senior iOS and mobile architecture studio. Software worth trusting — apps and AI, built to hold up."
+      content="Sage Nord is a software and AI company in Denmark. We build software worth trusting: our own products, and yours."
     />
     <!-- Live home is currently the GitHub Pages URL. When sagenord.com DNS is
          wired up: set vite base to "/", add public/CNAME, swap these URLs. -->
     <link rel="canonical" href="https://sorunokoe.github.io/SageNord/" />
-    <meta name="theme-color" content="#f7f9fc" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#05070d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f7f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0f0c" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Sage Nord" />
-    <meta property="og:title" content="Sage Nord — Software worth trusting" />
+    <meta property="og:title" content="Sage Nord · Software worth trusting" />
     <meta
       property="og:description"
-      content="Senior iOS and mobile architecture. Apps and AI, built to hold up."
+      content="Software and AI company. Our own products, and yours."
     />
     <meta property="og:url" content="https://sorunokoe.github.io/SageNord/" />
     <meta property="og:image" content="https://sorunokoe.github.io/SageNord/og.png" />
     <meta property="og:locale" content="en" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Sage Nord — Software worth trusting" />
+    <meta name="twitter:title" content="Sage Nord · Software worth trusting" />
     <meta
       name="twitter:description"
-      content="Senior iOS and mobile architecture. Apps and AI, built to hold up."
+      content="Software and AI company. Our own products, and yours."
     />
     <meta name="twitter:image" content="https://sorunokoe.github.io/SageNord/og.png" />
 
@@ -65,25 +65,19 @@
         "legalName": "Saga ApS",
         "url": "https://sorunokoe.github.io/SageNord/",
         "email": "hello@sagenord.com",
-        "description": "Senior iOS and mobile architecture studio. Software worth trusting — apps and AI, built to hold up.",
+        "description": "Software and AI company in Denmark. We build software worth trusting: our own products, and yours.",
         "slogan": "Software worth trusting.",
         "areaServed": ["Denmark", "Nordics", "Europe"],
         "knowsAbout": [
-          "iOS architecture",
-          "SwiftUI",
-          "mobile app development",
-          "on-device AI"
+          "AI product development",
+          "software architecture",
+          "web development",
+          "mobile development"
         ],
-        "founder": {
-          "@type": "Person",
-          "name": "Yeskendir Salgara",
-          "jobTitle": "iOS & Mobile Architect",
-          "description": "Ex-Trackman iOS Tech Lead."
-        },
         "serviceType": [
           "Consulting",
           "Research",
-          "Development",
+          "Product Development",
           "Integration",
           "Maintenance"
         ]
@@ -95,130 +89,49 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <canvas id="scene" aria-hidden="true"></canvas>
 
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Sage Nord — home">
-        <span class="wordmark__mark" aria-hidden="true"></span>
-        Sage&nbsp;Nord
-      </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="#services">Work</a>
-        <a href="#zero-to-one">0&nbsp;→&nbsp;1</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <div class="site-header__actions">
-        <a class="btn btn--primary btn--sm" href="mailto:hello@sagenord.com?subject=Intro%20call%20%E2%80%94%20Sage%20Nord">Book a call</a>
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">
-          <span class="theme-toggle__icon" aria-hidden="true"></span>
-        </button>
-      </div>
-    </header>
+    <a class="wordmark" href="#top">Sage Nord</a>
+
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">
+      <span class="theme-toggle__icon" aria-hidden="true"></span>
+    </button>
 
     <main id="main">
       <!-- 0 · HERO -->
       <section id="top" class="chapter hero" data-scene="0" aria-labelledby="hero-heading">
         <div class="chapter__inner hero__inner">
-          <p class="hero__eyebrow" data-reveal>iOS &amp; mobile architecture studio</p>
-          <h1 id="hero-heading" class="display hero__line">Software worth trusting.</h1>
+          <p class="hero__eyebrow" data-reveal><strong class="hero__eyebrow-brand">Sage Nord</strong> · Software &amp; AI studio</p>
+          <h1 id="hero-heading" class="hero__line" data-split>Software worth trusting.</h1>
           <p class="hero__subhead" data-reveal>
-            I help sports-tech and product teams ship iOS &amp; mobile apps that
-            hold up in production — senior architecture, hands-on, no handoffs.
+            We build AI-powered software: our own products, and yours.
+            Senior engineering, hands-on, no handoffs.
           </p>
-          <div class="hero__actions" data-reveal>
-            <a class="btn btn--primary" href="mailto:hello@sagenord.com?subject=Intro%20call%20%E2%80%94%20Sage%20Nord">Book an intro call</a>
-            <a class="btn btn--ghost" href="#services">See how I work</a>
-          </div>
           <p class="hero__proof" data-reveal>
-            Ex-Trackman iOS Tech Lead · SwiftUI · Performance · On-device AI
+            Product engineering · Performance · Practical AI
           </p>
         </div>
-        <a class="scroll-cue" href="#belief" aria-label="Scroll">
+        <a class="scroll-cue" href="#contact" aria-label="Scroll">
           <span aria-hidden="true"></span>
         </a>
       </section>
 
-      <!-- 1 · WHY -->
-      <section id="belief" class="chapter belief" data-scene="1" aria-labelledby="belief-heading">
-        <div class="chapter__inner">
-          <p class="kicker" data-reveal>Why</p>
-          <h2 id="belief-heading" class="display">Built to last.</h2>
-          <p class="statement" data-reveal>
-            Software is cheap to make and hard to trust. I build the kind you
-            can <em>depend on</em> — long after launch.
-          </p>
-          <ul class="proof" data-reveal>
-            <li><span>Ex-Trackman</span>iOS Tech Lead</li>
-            <li><span>Native</span>SwiftUI · Performance</li>
-            <li><span>On-device</span>Practical AI</li>
-            <li><span>Direct</span>Work with the architect</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- 2 · WHAT I BUILD -->
-      <section id="services" class="chapter services" data-scene="2" aria-labelledby="services-heading">
-        <div class="chapter__inner">
-          <p class="kicker" data-reveal>What I do</p>
-          <h2 id="services-heading" class="display">What I build.</h2>
-          <ol class="outcomes">
-            <li data-reveal>
-              <span class="outcomes__no">01</span>
-              <h3>Ship it right the first time</h3>
-              <p>Architecture and senior engineering so your app launches solid — not patched into stability later.</p>
-            </li>
-            <li data-reveal>
-              <span class="outcomes__no">02</span>
-              <h3>Rescue what's stuck</h3>
-              <p>Reviews, prototypes, and clean integration that unblock a mobile build gone sideways.</p>
-            </li>
-            <li data-reveal>
-              <span class="outcomes__no">03</span>
-              <h3>Keep it trustworthy</h3>
-              <p>Ongoing stewardship so it stays fast, secure, and reliable long after launch.</p>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <!-- 3 · FOCUS -->
-      <section id="zero-to-one" class="chapter zto" data-scene="3" aria-labelledby="zto-heading">
-        <div class="chapter__inner">
-          <p class="kicker" data-reveal>Focus</p>
-          <h2 id="zto-heading" class="display">0 → 1</h2>
-          <p class="zto__lead" data-reveal>From idea to shipped. Two things I take from zero to one:</p>
-          <div class="zto__pair">
-            <article class="zto__card" data-reveal>
-              <h3>Apps</h3>
-              <p>Native iOS &amp; mobile, architected for scale — first prototype to App Store.</p>
-            </article>
-            <article class="zto__card" data-reveal>
-              <h3>AI</h3>
-              <p>On-device and product AI that does real work — private, practical, woven in.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- 4 · CONTACT -->
-      <section id="contact" class="chapter contact" data-scene="4" aria-labelledby="contact-heading">
+      <!-- CHAPTER 1 · CONTACT -->
+      <section id="contact" class="chapter contact" aria-labelledby="contact-heading">
         <div class="chapter__inner contact__inner">
           <p class="kicker" data-reveal>Contact</p>
           <h2 id="contact-heading" class="display">Let's talk.</h2>
           <p class="contact__lead" data-reveal>
-            Tell me what you're working on and where it hurts. Every serious
-            message gets a reply — usually within a day.
+            Tell us what you're working on and where it hurts. Every serious
+            message gets a reply, usually within a day.
           </p>
-          <a class="btn btn--primary btn--large" href="mailto:hello@sagenord.com?subject=Intro%20call%20%E2%80%94%20Sage%20Nord" data-reveal>
-            Book an intro call
-          </a>
           <p class="contact__email" data-reveal>
-            or email <a href="mailto:hello@sagenord.com">hello@sagenord.com</a>
+            Email <a href="mailto:hello@sagenord.com">hello@sagenord.com</a>
           </p>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>© <span id="year">2026</span> Saga ApS — Sage Nord. Denmark.</p>
+      <p>© <span id="year">2026</span> Saga ApS · <strong>Sage Nord</strong>, Denmark.</p>
       <p class="site-footer__mission">Software worth trusting.</p>
     </footer>
 
