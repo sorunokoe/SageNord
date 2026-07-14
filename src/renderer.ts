@@ -207,8 +207,8 @@ export class PointsRenderer implements SceneRenderer {
   }
 
   private applyTheme() {
-    this.colorA = cssColor("--particle", "#14203a");
-    this.colorB = cssColor("--particle-accent", "#1b6ef3");
+    this.colorA = cssColor("--particle", "#17231b");
+    this.colorB = cssColor("--particle-accent", "#2f6b46");
     const dark = document.documentElement.getAttribute("data-theme") === "dark";
     this.material.blending = dark ? AdditiveBlending : NormalBlending;
     this.material.opacity = dark ? 0.92 : 0.82;

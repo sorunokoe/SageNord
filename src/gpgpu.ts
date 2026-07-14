@@ -400,8 +400,8 @@ export class FlowFieldRenderer implements SceneRenderer {
 
   private applyTheme() {
     const dark = document.documentElement.getAttribute("data-theme") === "dark";
-    this.material.uniforms.uColorA.value = cssColor("--particle", "#14203a");
-    this.material.uniforms.uColorB.value = cssColor("--particle-accent", "#1b6ef3");
+    this.material.uniforms.uColorA.value = cssColor("--particle", "#17231b");
+    this.material.uniforms.uColorB.value = cssColor("--particle-accent", "#2f6b46");
     // Additive in dark accumulates; keep per-particle opacity low so dense
     // regions glow rather than clip to white.
     this.material.uniforms.uOpacity.value = dark ? 0.55 : 0.72;

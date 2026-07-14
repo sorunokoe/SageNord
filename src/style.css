@@ -5,16 +5,16 @@
    ============================================================ */
 
 :root {
-  --bg: #f7f9fc;
+  --bg: #f6f7f4;
   --bg-elev: #ffffff;
-  --ink: #0a1120;
-  --ink-soft: #47506a;
-  --ink-faint: #6b7488; /* ~4.6:1 on --bg for AA body text */
-  --line: #d9e0ec;
-  --accent: #1b6ef3;
+  --ink: #10140f;
+  --ink-soft: #454f45;
+  --ink-faint: #636d5c; /* ~5:1 on --bg for AA body text */
+  --line: #dde1d7;
+  --accent: #2f6b46;
   --accent-ink: #ffffff;
-  --particle: #14203a;
-  --particle-accent: #1b6ef3;
+  --particle: #17231b;
+  --particle-accent: #2f6b46;
 
   --maxw: 1180px;
   --pad: clamp(1.25rem, 5vw, 4rem);
@@ -25,16 +25,16 @@
 }
 
 [data-theme="dark"] {
-  --bg: #0a0e1a;
-  --bg-elev: #131a2c;
-  --ink: #eef1f8;
-  --ink-soft: #aeb7cd;
-  --ink-faint: #737e99;
-  --line: #212a44;
-  --accent: #82b1ff;
-  --accent-ink: #0a0e1a;
+  --bg: #0b0f0c;
+  --bg-elev: #141a15;
+  --ink: #eef1ea;
+  --ink-soft: #b6bdae;
+  --ink-faint: #7c8574;
+  --line: #232a22;
+  --accent: #7bdb9c;
+  --accent-ink: #062012;
   --particle: #57d6c6; /* low-red teal — glows aurora, resists white clip */
-  --particle-accent: #7c9cff;
+  --particle-accent: #7bdb9c; /* aurora green, paired with the teal above */
 }
 
 *,
@@ -67,15 +67,15 @@ body {
 /* Depth behind the particle zone (kept subtle in light, richer in dark). */
 [data-theme="dark"] body {
   background:
-    radial-gradient(90vw 90vh at 82% 18%, #14203f 0%, rgba(10, 14, 26, 0) 60%),
-    radial-gradient(70vw 80vh at 90% 90%, #101a34 0%, rgba(10, 14, 26, 0) 55%),
-    #0a0e1a;
+    radial-gradient(90vw 90vh at 82% 18%, #122921 0%, rgba(11, 15, 12, 0) 60%),
+    radial-gradient(70vw 80vh at 90% 90%, #0f231b 0%, rgba(11, 15, 12, 0) 55%),
+    #0b0f0c;
   background-attachment: fixed;
 }
 [data-theme="light"] body {
   background:
-    radial-gradient(80vw 80vh at 85% 15%, #eef2fb 0%, rgba(247, 249, 252, 0) 60%),
-    #f7f9fc;
+    radial-gradient(80vw 80vh at 85% 15%, #eef2ea 0%, rgba(246, 247, 244, 0) 60%),
+    #f6f7f4;
   background-attachment: fixed;
 }
 
@@ -201,11 +201,6 @@ main,
   color: var(--accent);
   margin-bottom: 1.5rem;
 }
-.section-title {
-  font-size: clamp(1.9rem, 1.35rem + 2.7vw, 3.4rem);
-  max-width: 20ch;
-  text-wrap: balance;
-}
 
 /* ---- Hero ------------------------------------------------ */
 .hero__inner {
@@ -296,40 +291,6 @@ main,
   font-size: 0.9rem;
 }
 
-/* ---- Header actions ------------------------------------- */
-/* ---- Proof band ----------------------------------------- */
-.proof {
-  list-style: none;
-  margin-top: clamp(2rem, 4vw, 3rem);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
-  max-width: 40rem;
-}
-.proof li {
-  background: color-mix(in srgb, var(--bg-elev) 55%, transparent);
-  backdrop-filter: blur(6px);
-  padding: 1.1rem 1.25rem;
-  font-size: 0.95rem;
-  color: var(--ink-soft);
-}
-.proof span {
-  display: block;
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 1.05rem;
-  margin-bottom: 0.15rem;
-}
-@media (min-width: 720px) {
-  .proof {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
 /* ---- Scroll cue ----------------------------------------- */
 .scroll-cue {
   position: absolute;
@@ -370,110 +331,6 @@ main,
   color: var(--ink-soft);
   font-size: clamp(1rem, 0.95rem + 0.5vw, 1.35rem);
   max-width: 40ch;
-}
-
-/* ---- Services journey ----------------------------------- */
-.services__head {
-  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
-}
-.journey {
-  list-style: none;
-  border-top: 1px solid var(--line);
-}
-.journey__step {
-  display: grid;
-  grid-template-columns: 4rem 1fr;
-  gap: clamp(1rem, 4vw, 3rem);
-  align-items: baseline;
-  padding: clamp(1.5rem, 3vw, 2.4rem) 0;
-  border-bottom: 1px solid var(--line);
-  transition: padding-left 0.35s var(--ease);
-}
-.journey__step:hover {
-  padding-left: 1rem;
-}
-.journey__no {
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-  padding-top: 0.6rem;
-}
-.journey__body h3 {
-  font-size: clamp(1.6rem, 1.1rem + 2.4vw, 3rem);
-  margin-bottom: 0.5rem;
-  transition: color 0.3s var(--ease);
-}
-.journey__step:hover .journey__body h3 {
-  color: var(--accent);
-}
-.journey__body p {
-  color: var(--ink-soft);
-  max-width: 52ch;
-  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.25rem);
-}
-
-/* ---- 0 → 1 ---------------------------------------------- */
-.zto__title {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.5rem, 3vw, 2rem);
-  font-size: clamp(4.5rem, 2rem + 16vw, 13rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
-  margin-bottom: 1rem;
-}
-.zto__arrow {
-  color: var(--accent);
-  font-size: 0.45em;
-}
-.zto__lead {
-  color: var(--ink-soft);
-  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.6rem);
-  margin-bottom: clamp(2rem, 5vw, 3.5rem);
-  max-width: 30ch;
-}
-.zto__pair {
-  display: grid;
-  gap: 1.25rem;
-}
-.zto__card {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: clamp(1.75rem, 3vw, 2.75rem);
-  background: color-mix(in srgb, var(--bg-elev) 55%, transparent);
-  backdrop-filter: blur(6px);
-  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
-}
-.zto__card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-}
-.zto__card h3 {
-  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem);
-  margin-bottom: 0.6rem;
-}
-.zto__card p {
-  color: var(--ink-soft);
-}
-@media (min-width: 760px) {
-  .zto__pair {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ---- Studio --------------------------------------------- */
-.studio__body {
-  display: grid;
-  gap: 1.5rem;
-  max-width: 44ch;
-  margin-top: 2rem;
-  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.5rem);
-  color: var(--ink-soft);
-}
-.studio__body strong {
-  color: var(--ink);
-  font-weight: 600;
 }
 
 /* ---- Contact -------------------------------------------- */
