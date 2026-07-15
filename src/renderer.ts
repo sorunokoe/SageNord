@@ -103,7 +103,7 @@ export class PointsRenderer implements SceneRenderer {
   private checkT = 0;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.count = isMobile() ? 6000 : 12000;
+    this.count = isMobile() ? 3000 : 12000;
     this.scenes = buildScenes(this.count);
     this.current = Float32Array.from(this.scenes.positions[0]);
     this.target = Float32Array.from(this.scenes.positions[0]);

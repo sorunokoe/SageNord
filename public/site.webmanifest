@@ -1,0 +1,21 @@
+{
+  "name": "Sage Nord",
+  "short_name": "Sage Nord",
+  "description": "Software worth trusting.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b0f0c",
+  "theme_color": "#0b0f0c",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
