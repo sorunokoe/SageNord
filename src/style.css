@@ -4,6 +4,17 @@
    Fixed WebGL canvas behind full-viewport chapters.
    ============================================================ */
 
+/* Self-hosted, single weight, latin subset (~22KB). Used only for the
+   hero and section headings; body copy stays on the system font stack
+   for performance. Preloaded in index.html since the hero H1 is the LCP. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/bricolage-grotesque-700.woff2") format("woff2");
+}
+
 :root {
   --bg: #f6f7f4;
   --bg-elev: #ffffff;
@@ -22,6 +33,7 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", var(--font);
 }
 
 [data-theme="dark"] {
@@ -50,6 +62,11 @@ html {
 }
 html.reduced {
   scroll-behavior: auto;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 body {
@@ -233,6 +250,7 @@ main,
   font-weight: 700;
 }
 .hero__line {
+  font-family: var(--font-display);
   font-size: clamp(3rem, 1.5rem + 9vw, 9rem);
   letter-spacing: -0.04em;
   line-height: 0.95;
@@ -298,6 +316,7 @@ main,
   margin: 0;
 }
 .contact__title {
+  font-family: var(--font-display);
   font-size: clamp(2rem, 1.4rem + 3.6vw, 4.8rem);
   margin-bottom: 1.25rem;
 }
